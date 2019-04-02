@@ -1,5 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Outfile_x64=autoArmory-1rift-2grift.exe
 #AutoIt3Wrapper_UseX64=y
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #include <ImageSearch.au3>
@@ -11,8 +12,8 @@
 global $hFile = FileOpen(@ScriptDir & "\ArmoryLog.txt", 1)
 global $rosbotwindowtitle = ""
 global $riftCount = 0
-global $numRiftsToRun = 5
-global $numGriftsToRun = 6
+global $numRiftsToRun = 1
+global $numGriftsToRun = 2
 global $riftType = 1
 global $leaveGame = False
 global $armNumber = 2
@@ -297,8 +298,12 @@ Func gearOneOrTwo()
 
 
 	For $i = 1 To 5
-		$g1count += _ImageSearchArea("multishot.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
-		$g2count += _ImageSearchArea("impale.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
+		$g1count += _ImageSearchArea("multishot-th.bmp", 0, 740 + $x, 262 + $y, 777 + $x, 300 + $y, $xx, $yy, 100)
+		$g2count += _ImageSearchArea("impale-th.bmp", 0, 740 + $x, 262 + $y, 777 + $x, 300 + $y, $xx, $yy, 100)
+
+		; Skill bar, not compatible with turbohud
+		; $g1count += _ImageSearchArea("multishot.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
+		; $g2count += _ImageSearchArea("impale.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
 	Next
 
 	_FileWriteLog($hFile, "[gearOneOrTwo() - gear check done]  $g1count: " & $g1count & "  $g2count: " & $g2count)

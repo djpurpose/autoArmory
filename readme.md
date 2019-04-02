@@ -18,9 +18,21 @@
 1. This script
 2. [rosbot](www.ros-bot.com) with premium license (for master profile)
 3. [RBAssist - Bot Scheduling and Crash Recovery](https://www.ros-bot.com/forums/general-discussion/rbassist-bot-scheduling-and-crash-recovery-1376373)
-4. Diablo 3 running on fast PC (not sure this would work in a vm without modification)
+4. Diablo 3 running on fast PC (not sure this would work in a vm without modification). Windows should be 1920x1080. Diablo should be run windowed at minimum size (h and w) as the script assumes that size for clicking the correct coordinates.
 5. Running MultiShot / Impale Demon Hunter (can run other classes/builds with modifications)
 6. Not running TurboHud (can run it with modification and I'll probably add this next version as I like TurboHud)
+7. Default mapping for map (should be `m`) and Esc should be Esc.
+
+## What you should see
+1. After running the correct number of rifts and finishing vendor loop it should stop the bot and wait.
+2. Next, (assuming you set your town to act 1) it should open the map and teleport to **Old Ruins**.
+3. After that it should click the teleporter and select act 1 town.
+4. It should then click on the armory to walk over and open it up.
+5. Next it clicks either tab 1 for rifts or tab 2 for grifts and clicks equip.
+6. Next it does an image search to verify we changed correctly.
+7. Once its sure its in the right gear it changes the config in the bot to the correct rift type and and stop/starts the RBAssist monitor to resume botting.
+8. If the gear change failed we don't change the bot rift type and we run another one. After the end of that rift/grift it should re-try to change gear.
+
 
 ## Optional
 1. [Autoit](https://www.autoitscript.com/cgi-bin/getfile.pl?autoit3/autoit-v3-setup.exe) 
