@@ -23,19 +23,12 @@
 
 ## How to Run
 1. Make sure the entire "Setup / Install" is complete before starting.
-
 2. Start Diablo 3 and change into your rift gear (armory 1)
-
 3. Start RoS Bot and make sure DoGreaterRift is false, we always start in rift mode.
-
 4. Start RBAssist.
-
 5. Start autoArmory.exe in administrator mode (needed to control windows, mouse, keyboard). The script should detect the Diablo III window and activate it. If Diablo is not running the script will throw an error so make sure it's running before launching the script. 
-
 6. The script should show in your taskbar. If you need to close the script you can right click the icon and click exit.
-
 7. Once the script is running, click "Start" in RBAssist.
-
 8. Hopefully you now have a working armory switcher. 
 
 ## Suggestions
@@ -43,54 +36,50 @@
 
 2. If you are tech savy I suggest installing the tail command into windows and doing a tail - f on the ArmoryLog.txt and showing on your screen, this can help debug any issues you might have. See screenshot:
 
-![](readmeImages/tail.PNG)
+ ![](readmeImages/tail.PNG)
 
 
 
 ## Setup / Install
 1. Click the "Clone or Download" button then "Download Zip"
-
-2. Extract the zip to a directory of your choice. Directory should look like this:
-
-
+2. Extract the zip to a directory of your choice. 
 3. Run Diablo III in windowed mode and make the window the minimum size (it will not work any larger than this without modification)
-
 4. Make sure your Rift gear is in Armory 1 and Multishot is on the right mouse button. Make sure no items are missing.
 
-![](readmeImages/Armory1.PNG)
+ ![](readmeImages/Armory1.PNG)
 
 5. Make sure your GRift gear is in Armory 2 and Impale is on the right mouse button. Make sue no items are missing.
 
-![](readmeImages/Armory2.PNG)
+ ![](readmeImages/Armory2.PNG)
 
 6. Setup your Master Profile. Like shown. The purpose of these settings is to make sure there is no possible way to lose gems when changing gear. Vendor limit: 24 Items and a picket that doesnt sell gems.
 
-**To test:** this put a legendary gem and a flawless royal gem you don't care about in your inventory and run some rifts. If the bot correctly puts the gems in your stash then you should be good to go. 
+ **To test:** this put a legendary gem and a flawless royal gem you don't care about in your inventory and run some rifts. If the bot correctly puts the gems in your stash then you should be good to go. 
 
-**NOTE:** In over a week of testing I never had an issue losing anything but this is at your own risk. The script only changes armory and restarts the bot. 
+ **NOTE:** In over a week of testing I never had an issue losing anything but this is at your own risk. The script only changes armory and restarts the bot. 
 
-![](readmeImages/MasterProfile.PNG)
+ ![](readmeImages/MasterProfile.PNG)
 
 7. Assuming you have RBAssist setup already. In RBAssist General tab set "Start RoS-Bot when monitoring starts"
 
-![](readmeImages/RBAMain.PNG)
+ ![](readmeImages/RBAMain.PNG)
 
 8. In RBAssist Monitoring tab set the following:
 
-![](readmeImages/RBAMonitoring.PNG)
+ ![](readmeImages/RBAMonitoring.PNG)
 
 9. In RBAssist Triggers tab set the following Trigger/Actions Note that's `^[` and `^]` for the keystrokes to send:
 
-![](readmeImages/RBATriggers.PNG)
-![](readmeImages/RBATriggers2.PNG)
+ ![](readmeImages/RBATriggers.PNG)
+ ![](readmeImages/RBATriggers2.PNG)
 
 10. In RoS Bot make sure to set your master profile, and rift as the Sequence:
 
-![](readmeImages/RosBot.PNG)
+ ![](readmeImages/RosBot.PNG)
 
 11. In RoS Bot Config set the following settings. Note we always start the session in Rift mode so set DoGreaterRift to False:
 
-![](readmeImages/RosBotConfig.PNG)
+ ![](readmeImages/RosBotConfig.PNG)
 
 
 
