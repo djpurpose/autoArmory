@@ -31,24 +31,11 @@ global $h = $bPos[3]
 
 
 ; Hotkey INFO - Running Step : Talk to Orek
-HotKeySet(",", "incRiftCount")
+HotKeySet("^[", "incRiftCount")
 
 ; Hotkey INFO - Vendor loop
-HotKeySet(".", "armoryControler")
+HotKeySet("^]", "armoryControler")
 
-; Hotkey INFO - Vendor loop
-; HotKeySet("9", "testImageSearch")
-
-Func testImageSearch()
-	Local $bPos = WinGetPos("Diablo III")
-
-	If @error Then
-		_FileWriteLog($hFile, "[test() - ERROR] Window Position Failed, Diablo Window not Present")
-		Return
-	EndIf
-
-	_FileWriteLog($hFile, "[test() - SUCCESS] Window Present")
-EndFunc
 
 ; Increment Rift count
 Func incRiftCount()
@@ -310,8 +297,8 @@ Func gearOneOrTwo()
 
 
 	For $i = 1 To 5
-		$g1count += _ImageSearchArea('multishot.bmp', 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
-		$g2count += _ImageSearchArea('impale.bmp', 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
+		$g1count += _ImageSearchArea("multishot.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
+		$g2count += _ImageSearchArea("impale.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
 	Next
 
 	_FileWriteLog($hFile, "[gearOneOrTwo() - gear check done]  $g1count: " & $g1count & "  $g2count: " & $g2count)
