@@ -1,6 +1,11 @@
 # Auto Armory 
 *An Armory / Rift-Type changing script for ros-bot*
 
+## About
+* Script by: **djpurpose**
+* Made possible by **RoSBot** and **RBAssist**
+* Questions or suggestions I can be reached on Discord: `djpurpose#9880`
+* This script is use at your own risk but if you follow the setup you should be fine.
 
 ## How it Works
 1. Run the number of rifts specified.
