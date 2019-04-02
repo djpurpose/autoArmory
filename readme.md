@@ -20,7 +20,7 @@
 3. [RBAssist - Bot Scheduling and Crash Recovery](https://www.ros-bot.com/forums/general-discussion/rbassist-bot-scheduling-and-crash-recovery-1376373)
 4. Diablo 3 running on fast PC (not sure this would work in a vm without modification)
 5. Running MultiShot / Impale Demon Hunter (can run other classes/builds with modifications)
-6. Not running TurboHud (can run it with modificaiton and I'll probably add this next version as I like TurbHud)
+6. Not running TurboHud (can run it with modification and I'll probably add this next version as I like TurboHud)
 
 ## Optional
 1. [Autoit](https://www.autoitscript.com/cgi-bin/getfile.pl?autoit3/autoit-v3-setup.exe) 
@@ -39,7 +39,7 @@
 ## Suggestions
 1. Run the 1/2 script first (it might be the best fit anyways depending on your gear) then monitor the the bot. It should stop after the first successful rift and change gear / rift settings. **WARNING** Avoid using the mouse/keyboard at all costs when its changing gear. Any slight input can make it fail. 
 
-2. If you are tech savy I suggest installing the tail command into windows and doing a tail - f on the ArmoryLog.txt and showing on your screen, this can help debug any issues you might have. See screenshot:
+2. If you are tech-savy I suggest installing the tail command into windows and doing a tail - f on the ArmoryLog.txt and showing on your screen, this can help debug any issues you might have. See screenshot:
 
  ![](readmeImages/tail.PNG)
 
@@ -53,15 +53,15 @@
 
  ![](readmeImages/Armory1.PNG)
 
-5. Make sure your GRift gear is in Armory 2 and Impale is on the right mouse button. Make sue no items are missing.
+5. Make sure your GRift gear is in Armory 2 and Impale is on the right mouse button. Make sure no items are missing.
 
  ![](readmeImages/Armory2.PNG)
 
-6. Setup your Master Profile. Like shown. The purpose of these settings is to make sure there is no possible way to lose gems when changing gear. Vendor limit: 24 Items and a picket that doesnt sell gems.
+6. Setup your Master Profile. Like shown. The purpose of these settings is to make sure there is no possible way to lose gems when changing gear. Vendor limit: 24 Items and a picket that doesn't sell gems.
 
- **To test:** this put a legendary gem and a flawless royal gem you don't care about in your inventory and run some rifts. If the bot correctly puts the gems in your stash then you should be good to go. 
+  **To test:** Put a legendary gem and a flawless royal gem you don't care about in your inventory and run some rifts. If the bot correctly puts the gems in your stash then you should be good to go. 
 
- **NOTE:** In over a week of testing I never had an issue losing anything but this is at your own risk. The script only changes armory and restarts the bot. 
+  **NOTE:** In over a week of testing I never had an issue losing anything. The script only changes armory and restarts the bot. As long as your bot settings are correct you shouldn't have any trouble.
 
  ![](readmeImages/MasterProfile.PNG)
 
@@ -86,11 +86,12 @@
 
  ![](readmeImages/RosBotConfig.PNG)
 
+## Troubleshooting
+1. Subscript Error when loading script: The Diablo window is not open. Open Diablo before opeing the script
 
+2. Doesnt change gear correctly. Most likely your window size is off or the timers are too short for your PC speed. Look at the logs to see where you you need to adjust.
 
+3. Script is running a gr as multishot or a rift as impale. Can be a few things:
+  1. You didn't start things correctly, make sure you are wearing rift gear (multishot armory 1), make sure rosbot is set to not run grifts, exit any running autoArmory scripts and start a fresh one. This insures we are in the correct state when starting.
 
-
-
-
-
-
+  2. It might have changed gear ok but failed to change the rift type. Watch it closely to see where it failed.
