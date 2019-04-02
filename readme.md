@@ -92,6 +92,6 @@
 2. Doesnt change gear correctly. Most likely your window size is off or the timers are too short for your PC speed. Look at the logs to see where you you need to adjust.
 
 3. Script is running a gr as multishot or a rift as impale. Can be a few things:
-  1. You didn't start things correctly, make sure you are wearing rift gear (multishot armory 1), make sure rosbot is set to not run grifts, exit any running autoArmory scripts and start a fresh one. This insures we are in the correct state when starting.
+ * You didn't start things correctly, make sure you are wearing rift gear (multishot armory 1), make sure rosbot is set to not run grifts, exit any running autoArmory scripts and start a fresh one. This insures we are in the correct state when starting.
 
-  2. It might have changed gear ok but failed to change the rift type. Watch it closely to see where it failed.
+ * It might have changed gear ok but failed to change the rift type. Watch it closely to see where it failed.
