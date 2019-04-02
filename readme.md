@@ -7,6 +7,10 @@
 * Questions or suggestions I can be reached on Discord: `djpurpose#9880`
 * This script is use at your own risk but if you follow the setup you should be fine.
 
+## Version updates
+* v0.01 - 04/01/2019 - Initial build.
+* v0.02 - Changed gear change verification to offhand instead of skills to be compatible with TurboHUD. Removed 5rift/6grift rift type and added 2rift/4grift. 2/4 is the same ratio of 1/2 with less gear changes but I left 1/2 for faster testing.
+
 ## How it Works
 1. Run the number of rifts specified.
 2. Change armory / rift type
@@ -20,7 +24,7 @@
 3. [RBAssist - Bot Scheduling and Crash Recovery](https://www.ros-bot.com/forums/general-discussion/rbassist-bot-scheduling-and-crash-recovery-1376373)
 4. Diablo 3 running on fast PC (not sure this would work in a vm without modification). Windows should be 1920x1080. Diablo should be run windowed at minimum size (h and w) as the script assumes that size for clicking the correct coordinates.
 5. Running MultiShot / Impale Demon Hunter (can run other classes/builds with modifications)
-6. Not running TurboHud (can run it with modification and I'll probably add this next version as I like TurboHud)
+6. The script now supports TurboHUD. If you want to use TurboHUD add a trigger to RBAssist to launch your TurboHUD executable when launching D3. Its not required and should speed things up if you don't use it but it will provide exp/hr stats for you which is nice. To use it I normally have RBA load diablo and RoSBot then once the Diablo Start Game screen is up I click on the autoArmory exe. If you are not in your rift gear or the bot is not set to do regualr rifts only then press F7 to stop the bot, change those and start the bot again.
 7. Default mapping for map (should be `m`) and Esc should be Esc.
 
 ## What you should see
@@ -48,6 +52,7 @@
 7. Once the script is running, click "Start" in RBAssist.
 8. Hopefully you now have a working armory switcher. 
 
+
 ## Suggestions
 1. Run the 1/2 script first (it might be the best fit anyways depending on your gear) then monitor the the bot. It should stop after the first successful rift and change gear / rift settings. **WARNING** Avoid using the mouse/keyboard at all costs when its changing gear. Any slight input can make it fail. 
 
@@ -60,12 +65,12 @@
 ## Setup / Install
 1. Click the "Clone or Download" button then "Download Zip"
 2. Extract the zip to a directory of your choice. 
-3. Run Diablo III in windowed mode and make the window the minimum size (it will not work any larger than this without modification)
-4. Make sure your Rift gear is in Armory 1 and Multishot is on the right mouse button. Make sure no items are missing.
+3. Run Diablo III in windowed mode and make the window the minimum size (it will not work any larger than this without modification). To be safe run windows in 1920x1080. Will work on supporting other resolutions and window sizes.
+4. Make sure your Rift gear is in Armory 1 (Multishot using Dead Mans Legacy quiver, we will detect this later). Make sure no items are missing.
 
  ![](readmeImages/Armory1.PNG)
 
-5. Make sure your GRift gear is in Armory 2 and Impale is on the right mouse button. Make sure no items are missing.
+5. Make sure your GRift gear is in Armory 2 (Impale using Holy Point Shot, we will detect this later). Make sure no items are missing.
 
  ![](readmeImages/Armory2.PNG)
 
