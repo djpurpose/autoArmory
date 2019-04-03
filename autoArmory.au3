@@ -1,6 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Outfile_x64=autoArmory-1rift-2grift.exe
+#AutoIt3Wrapper_Outfile_x64=autoArmory-2rift-4grift.exe
 #AutoIt3Wrapper_UseX64=y
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #include <ImageSearch.au3>
@@ -18,6 +18,7 @@ global $riftType = 1
 global $leaveGame = False
 global $armNumber = 2
 global $changingGearFlag = 0
+global $ignoreCounter = 0
 
 
 ; Activate window
@@ -44,10 +45,26 @@ Func incRiftCount()
 	_FileWriteLog($hFile, "[incRiftCount() called]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & "  numGriftsToRun: " & $numGriftsToRun)
 EndFunc
 
+Func fixState()
+	; Avoid weird loops because we are in the wrong town
+	; Next make the town not matter
+	$riftCount = $riftCount > 0 ? $riftCount - 1 : 0
+	_FileWriteLog($hFile, "[fixState() - Setting $riftCount] $riftCount set to: " & $riftCount)
+
+	_FileWriteLog($hFile, "[fixState() - Reseting Flag]")
+	$changingGearFlag = 0
+EndFunc
+
 ; Controler function, decides if we should switch specs
 Func armoryControler()
-	If $changingGearFlag = 1 Then
+	If ($changingGearFlag = 1 And $ignoreCounter <= 10) Then
 		_FileWriteLog($hFile, "[armoryControler() - called during gear change]  Ignoring...")
+		Return
+
+	; Something happened and a previous thread failed poorly, lets get back to a good state
+	ElseIf $ignoreCounter > 10 Then
+		_FileWriteLog($hFile, "[armoryControler() - called during gear change]  Ignoring...")
+		fixState()
 		Return
 	EndIf
 	_FileWriteLog($hFile, "[armoryControler() - called]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & "  numGriftsToRun: " & $numGriftsToRun)
@@ -100,13 +117,7 @@ Func armoryControler()
 
 			stopStartMonitor()
 
-			; Avoid weird loops because we are in the wrong town
-			; Next make the town not matter
-			$riftCount = $riftCount > 0 ? $riftCount - 1 : 0
-			_FileWriteLog($hFile, "[armoryControler() - Setting $riftCount] $riftCount set to: " & $riftCount)
-
-			_FileWriteLog($hFile, "[armoryControler() - Reseting Flag]")
-			$changingGearFlag = 0
+			fixState()
 
 			Return
 		EndIf
@@ -132,13 +143,7 @@ Func armoryControler()
 
 			stopStartMonitor()
 
-			; Avoid weird loops because we are in the wrong town
-			; Next make the town not matter
-			$riftCount = $riftCount > 0 ? $riftCount - 1 : 0
-			_FileWriteLog($hFile, "[armoryControler() - Setting $riftCount] $riftCount set to: " & $riftCount)
-
-			_FileWriteLog($hFile, "[armoryControler() - Reseting Flag]")
-			$changingGearFlag = 0
+			fixState()
 
 		EndIf
     EndIf
@@ -149,19 +154,28 @@ Func screenShotDiablo()
 EndFunc
 
 Func stopStartMonitor()
-	_FileWriteLog($hFile, "[stopStartMonitor() - Stopping Monitor]")
+
 	sleep(1000)
 
-    ; Click Configure
-	FindBotTitle()
+	; Wait 10 sec to activate the window
+	_FileWriteLog($hFile, "[stopStartMonitor() - Activating the monitor window]")
 	WinActivate("RBAssist v1.3.6 by Sunblood")
-	Local $hWnd = WinWaitActive("[CLASS:AutoIt v3 GUI]")
-		ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:2]")
-	sleep(1000)
 
-	_FileWriteLog($hFile, "[stopStartMonitor() - Starting Monitor]")
-	ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:1]")
-	sleep(1000)
+	_FileWriteLog($hFile, "[stopStartMonitor() - Looking for Monitor window]")
+	Local $hWnd = WinWaitActive("[CLASS:AutoIt v3 GUI]", "", 10)
+
+	; If it succeeded then click stop/start, if we fail we will try again after another rift
+	if $hWnd Then
+		_FileWriteLog($hFile, "[stopStartMonitor() - Stopping Monitor]")
+		ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:2]")
+		sleep(1000)
+
+		_FileWriteLog($hFile, "[stopStartMonitor() - Starting Monitor]")
+		ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:1]")
+		sleep(1000)
+	Else
+		_FileWriteLog($hFile, "[stopStartMonitor() - Failed to find Monitor Window] Returning...")
+	EndIf
 EndFunc
 
 Func changeBotRiftType($riftType)
