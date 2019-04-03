@@ -1,6 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Outfile_x64=autoArmory-2rift-4grift.exe
+#AutoIt3Wrapper_Outfile_x64=autoArmory-1rift-2grift.exe
 #AutoIt3Wrapper_UseX64=y
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #include <ImageSearch.au3>
