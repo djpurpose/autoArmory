@@ -68,11 +68,11 @@
 1. Click the "Clone or Download" button then "Download Zip"
 2. Extract the zip to a directory of your choice. 
 3. Run Diablo III in windowed mode and make the window the minimum size (it will not work any larger than this without modification). To be safe run windows in 1920x1080. Will work on supporting other resolutions and window sizes.
-4. Make sure your Rift gear is in Armory 1 (Multishot using Dead Mans Legacy quiver, we will detect this later). Make sure no items are missing.
+4. Make sure your Rift gear is in Armory 1 (Multishot using Dead Mans Legacy quiver, we will detect this later). Make sure no items are missing. Also Multishot should be on the right mouse button as shown.
 
  ![](readmeImages/Armory1.PNG)
 
-5. Make sure your GRift gear is in Armory 2 (Impale using Holy Point Shot, we will detect this later). Make sure no items are missing.
+5. Make sure your GRift gear is in Armory 2 (Impale using Holy Point Shot, we will detect this later). Make sure no items are missing. Also Impale should be on the right mouse button as shown.
 
  ![](readmeImages/Armory2.PNG)
 
