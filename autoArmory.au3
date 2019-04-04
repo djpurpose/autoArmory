@@ -38,11 +38,23 @@ HotKeySet("^[", "incRiftCount")
 ; Hotkey INFO - Vendor loop
 HotKeySet("^]", "armoryControler")
 
+; Hotkey incRiftCount
+HotKeySet("^.", "incRiftCount")
+
+; Hotkey decRiftCount
+HotKeySet("^,", "decRiftCount")
+
 
 ; Increment Rift count
 Func incRiftCount()
     $riftCount = $riftCount + 1
 	_FileWriteLog($hFile, "[incRiftCount() called]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & "  numGriftsToRun: " & $numGriftsToRun)
+EndFunc
+
+; Decrement Rift count
+Func decRiftCount()
+    $riftCount = $riftCount - 1
+	_FileWriteLog($hFile, "[decRiftCount() called]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & "  numGriftsToRun: " & $numGriftsToRun)
 EndFunc
 
 Func fixState()
@@ -280,10 +292,6 @@ Func selectArmory($armoryNumber)
 		If $armoryNumber = $gearnum Then
 			$riftType = $armoryNumber
 
-
-			; Close Armory
-			Send("{Esc}")
-			sleep(500)
 		EndIf
     EndIf
 EndFunc
@@ -291,7 +299,7 @@ EndFunc
 ; Return what gear, 1 for ms, 2 for imp, 0 for we dont know.
 Func gearOneOrTwo()
 
-	Local $g1count = 0, $g2count = 0
+	Local $g1count = 0, $g2count = 0, $g1count2 = 0, $g2count2 = 0
 	Local $xx = 0, $yy = 0
 
 	_FileWriteLog($hFile, "[gearOneOrTwo() - checking gear]")
@@ -310,26 +318,32 @@ Func gearOneOrTwo()
 		Return SetError(1,0,0)
 	EndIf
 
-
+	; Check quiver
 	For $i = 1 To 5
-		$g1count += _ImageSearchArea("multishot-th.bmp", 0, 740 + $x, 262 + $y, 777 + $x, 300 + $y, $xx, $yy, 100)
-		$g2count += _ImageSearchArea("impale-th.bmp", 0, 740 + $x, 262 + $y, 777 + $x, 300 + $y, $xx, $yy, 100)
+		$g1count += _ImageSearchArea("multishot-th.bmp", 0, 740 + $x, 262 + $y, 777 + $x, 300 + $y, $xx, $yy, 90)
+		$g2count += _ImageSearchArea("impale-th.bmp", 0, 740 + $x, 262 + $y, 777 + $x, 300 + $y, $xx, $yy, 90)
+	Next
 
-		; Skill bar, not compatible with turbohud
-		; $g1count += _ImageSearchArea("multishot.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
-		; $g2count += _ImageSearchArea("impale.bmp", 0, 394 + $x, 596 + $y, 457 + $x, 625 + $y, $xx, $yy, 100)
+	; Check right mouse button skill
+	For $i = 1 To 5
+		$g1count2 += _ImageSearchArea("multishot.bmp", 0, 404 + $x, 580 + $y, 440 + $x, 620 + $y, $xx, $yy, 90)
+		$g2count2 += _ImageSearchArea("impale.bmp", 0, 404 + $x, 580 + $y, 440 + $x, 620 + $y, $xx, $yy, 90)
 	Next
 
 	_FileWriteLog($hFile, "[gearOneOrTwo() - gear check done]  $g1count: " & $g1count & "  $g2count: " & $g2count)
 
-	If $g1count > $g2count Then
-		_FileWriteLog($hFile, "[gearOneOrTwo() - Return]  $g1count: " & $g1count & " is >  $g2count: " & $g2count & "  Returning 1")
+	If ($g1count > $g2count And $g1count2 > $g2count2) Then
+		_FileWriteLog($hFile, "[gearOneOrTwo() - g1 > g2]  $g1count: " & $g1count & " is >  $g2count: " & $g2count & "  Returning 1")
+		_FileWriteLog($hFile, "[gearOneOrTwo() - g1 > g2]  $g1count2: " & $g1count2 & " is >  $g2count2: " & $g2count2 & "  Returning 1")
 		Return 1
-	ElseIf $g2count > $g1count Then
-		_FileWriteLog($hFile, "[gearOneOrTwo() Return]  $g2count: " & $g2count & " is >  $g1count: " & $g1count & "  Returning 2")
+	ElseIf ($g1count < $g2count And $g1count2 < $g2count2) Then
+		_FileWriteLog($hFile, "[gearOneOrTwo() - g2 > g1]  $g2count: " & $g2count & " is >  $g1count: " & $g1count & "  Returning 2")
+		_FileWriteLog($hFile, "[gearOneOrTwo() - g2 > g1]  $g2count2: " & $g2count2 & " is >  $g1count2: " & $g1count2 & "  Returning 2")
+
 		Return 2
 	Else
-		_FileWriteLog($hFile, "[gearOneOrTwo() Return]  $g2count: " & $g2count & " are equal $g1count: " & $g1count & "  Returning 0")
+		_FileWriteLog($hFile, "[gearOneOrTwo() - No winner]  $g1count: " & $g1count & " $g2count: " & $g2count & "  Returning 0")
+		_FileWriteLog($hFile, "[gearOneOrTwo() - No winner]  $g1count2: " & $g1count2 & " $g2count2: " & $g2count2 & "  Returning 0")
 		Return 0
 	EndIf
 EndFunc

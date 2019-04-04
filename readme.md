@@ -11,6 +11,7 @@
 * v0.01 - 04/01/2019 - Initial build.
 * v0.02 - 04/02/2019 - Changed gear change verification to offhand instead of skills to be compatible with TurboHUD. Removed 5rift/6grift rift type and added 2rift/4grift. 2/4 is the same ratio of 1/2 with less gear changes but I left 1/2 for faster testing.
 * v0.03 - 04/03/2019 - Added support for the edge case where activating the RBAssist window fails. Now we wait 10 sec for it to become active and continue on to try again after the next rift.
+* v0.04 - 04/03/2019 - Added additional gear verification to be safe. We now check the quiver and the main attack (right mouse button.) Also added hotkeys to increment `Ctrl + >` or decrement `Ctrl + <` rift count. This allows you to add to the rift count to switch gear next time you are in town or decrement rift count if you want to run a couple more grifts and use up your pools. 
 
 ## How it Works
 1. Run the number of rifts specified.
