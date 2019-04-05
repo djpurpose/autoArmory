@@ -314,35 +314,42 @@ Func selectArmory($armoryNumber)
         sleep(1500)
 
         ; Old Ruins
+		MouseMove(367 + $x, 218 + $y)
         MouseClick("left", 367 + $x, 218 + $y, 1, 1)
-        sleep(4500)
+        sleep(5500)
 
         ; Teleporter
-        MouseClick("left", 404 + $x, 307 + $y, 1, 1)
-        sleep(3500)
-
-        ; New Tristam
-        MouseClick("left", 439 + $x, 300 + $y, 1, 1)
+		MouseMove(408 + $x, 312 + $y)
+        MouseClick("left", 408 + $x, 312 + $y, 1, 1)
         sleep(4500)
 
+        ; New Tristam
+		MouseMove(439 + $x, 300 + $y)
+        MouseClick("left", 439 + $x, 300 + $y, 1, 1)
+        sleep(5500)
+
         ; Armory
+		MouseMove(185 + $x, 70 + $y)
         MouseClick("left", 185 + $x, 70 + $y, 1, 1)
-        sleep(3500)
+        sleep(4500)
 
         ; Click on the Armory 1 or 2
         If $armoryNumber = 1 Then
             ; Armory 1
+			MouseMove(293 + $x, 156 + $y)
             MouseClick("left", 293 + $x, 156 + $y, 1, 1)
-            sleep(1000)
+            sleep(2000)
         ElseIf $armoryNumber = 2 Then
             ; Armory 2
+			MouseMove(293 + $x, 227 + $y)
             MouseClick("left", 293 + $x, 227 + $y, 1, 1)
-            sleep(1000)
+            sleep(2000)
 		EndIf
 
         ; Equip
+		MouseMove(220 + $x, 502 + $y)
         MouseClick("left", 220 + $x, 502 + $y, 1, 2)
-        sleep(6000)
+        sleep(7000)
 
 		; verify we actually changed
 		Local $gearnum = gearOneOrTwo()
