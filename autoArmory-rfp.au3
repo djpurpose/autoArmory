@@ -356,6 +356,7 @@ Func selectArmory($armoryNumber)
         sleep(4500)
 
         ; Armory
+		MouseMove(185 + $x, 70 + $y)
         MouseClick("left", 185 + $x, 70 + $y, 1, 1)
         sleep(3500)
 
@@ -370,18 +371,20 @@ Func selectArmory($armoryNumber)
             sleep(1000)
 		EndIf
 
-        ; Equip
-        MouseClick("left", 220 + $x, 502 + $y, 1, 2)
-        sleep(6000)
+		For $1 = 1 to 20
+			; Equip for BinSu
+			MouseClick("left", 220 + $x, 502 + $y, 1, 2)
+			sleep(1000)
 
-		; verify we actually changed
-		Local $gearnum = gearOneOrTwo()
+			; verify we actually changed
+			Local $gearnum = gearOneOrTwo()
 
-		; We changed correctly LETS GO!!!
-		If $armoryNumber = $gearnum Then
-			$riftType = $armoryNumber
-
-		EndIf
+			; We changed correctly LETS GO!!!
+			If $armoryNumber = $gearnum Then
+				$riftType = $armoryNumber
+				Return
+			EndIf
+		Next
     EndIf
 EndFunc
 

@@ -15,6 +15,7 @@
 * v0.05 - 04/04/2019 - Added autoArmoryTest.ext and it's source. This allows the user to test out swapping gear without running rifts. It also will swap the rift type in rosbot so run it with rosbot open (but not running) and d3 open. Just press Ctrl+g to change gear. Note there's a 6 sec delay once pressing till it tries to swap gear. 
 * v0.06 - 04/04/2019 - Added mouse movement when clicking on the telporter. This fixes an issue where clicking the teleporter is too fast and causes the caracter in the old ruins to move instead of opening the map.
 * v0.07 - 04/04/2019 - Added RiftForPool version!!! This version will rift until the pool marker is on the far right, then run 'n' rifts more (2 by default). It's set to leave game after every rift and stay in game after every grift. Assuming decent gear, no pickit, this should max the exp per hour. For those running a normal pickit I will add a version that doesn't change the stay in game probability next.
+* v0.08 - 04/04/2019 - Added support for vm's having trouble with clicking armory and CD's not allowing the character to swap gear.
 
 ## How it Works
 1. Run the number of rifts specified.
