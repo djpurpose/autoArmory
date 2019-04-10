@@ -259,6 +259,8 @@ Func selectArmory($armoryNumber)
         sleep(4500)
 
         ; Teleporter
+		MouseMove(404 + $x, 307 + $y, 5)
+		sleep(200)
         MouseClick("left", 404 + $x, 307 + $y, 1, 1)
         sleep(3500)
 

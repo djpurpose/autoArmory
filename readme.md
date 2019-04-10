@@ -13,6 +13,7 @@
 * v0.03 - 04/03/2019 - Added support for the edge case where activating the RBAssist window fails. Now we wait 10 sec for it to become active and continue on to try again after the next rift.
 * v0.04 - 04/03/2019 - Added additional gear verification to be safe. We now check the quiver and the main attack (right mouse button.) Also added hotkeys to increment `Ctrl + >` or decrement `Ctrl + <` rift count. This allows you to add to the rift count to switch gear next time you are in town or decrement rift count if you want to run a couple more grifts and use up your pools.
 * v0.05 - 04/04/2019 - Added autoArmoryTest.ext and it's source. This allows the user to test out swapping gear without running rifts. It also will swap the rift type in rosbot so run it with rosbot open (but not running) and d3 open. Just press Ctrl+g to change gear. Note there's a 6 sec delay once pressing till it tries to swap gear. 
+* v0.06 - 04/04/2019 - Added mouse movement when clicking on the telporter. This fixes an issue where clicking the teleporter is too fast and causes the caracter in the old ruins to move instead of opening the map. 
 
 ## How it Works
 1. Run the number of rifts specified.
