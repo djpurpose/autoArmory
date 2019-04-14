@@ -3,6 +3,8 @@
 #AutoIt3Wrapper_Outfile_x64=autoArmoryV1.exe
 #AutoIt3Wrapper_UseX64=y
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+
+; Includes
 #include <ImageSearch.au3>
 #include <AutoItConstants.au3>
 #include <Date.au3>
@@ -12,15 +14,16 @@
 ; User ini settings
 Global $numRiftsToRun = 2				; Number of normal rifts to run
 Global $numGriftsToRun = 4 				; Number of greater rifts to run (ignored if RFP is enabled)
-Global $leaveGame = False 				; Should we leave game on rifts? No effect on grifts
-Global $riftForPools = False			; When true we rift until pool marker shows on the right, then run $numRiftsToRun more rifts
+Global $leaveGameOnNormalRift = True 	; Should we leave game on rifts? No effect on grifts
+Global $riftForPools = True				; When true we rift until pool marker shows on the right, then run $numRiftsToRun more rifts
 										; We then switch to greater rifts until pools are gone. Note this mode needs extra keys available
 										; as it might use more keys than it gets in rifts. If you are low on keys keep this false and adjust
 										; the number of rifts/grifts accordingly.
 
-; Defaults
+; Defaults settings
 Global Const $autoArmoryLogFile = FileOpen(@ScriptDir & "\ArmoryLog.txt", 1)
 Global Const $settingsIni = "autoArmorySettings.ini"
+Global Const $screenshotDirectory = "armoryScreenshots\"
 
 ; Dynamic state variables
 Global $riftCount = 0					; How many rifts/grifts we have run in this cycle
@@ -32,19 +35,13 @@ Global $ignoreCounter = 0
 Global $pools = False
 Global $checkingPools = False
 Global $justFailedGearSwap = False
+Global $x = 0
+Global $y = 0
+Global $w = 0
+Global $h = 0
 
 loadSettings()
-
-; Activate window
-WinActivate("[CLASS:D3 Main Window Class]")
-
-Local $bPos = WinGetPos("Diablo III")
-
-Global $x = $bPos[0]
-Global $y = $bPos[1]
-Global $w = $bPos[2]
-Global $h = $bPos[3]
-
+setDiabloWindowLocation()
 
 ; Hotkey INFO - Running Step : Talk to Orek
 HotKeySet("^[", "incRiftCount")
@@ -118,10 +115,9 @@ Func aaLog($functionName, $message, $state = 0, $settings = 0)
 
 	; Log settings if requested
 	If $settings Then
-		_FileWriteLog($autoArmoryLogFile, "   | riftsToRun: " & $numRiftsToRun & " | rt: " & $numGriftsToRun & " | $leaveGame: " & $leaveGame & " | $riftForPools: " & $riftForPools)
+		_FileWriteLog($autoArmoryLogFile, "   | riftsToRun: " & $numRiftsToRun & " | rt: " & $numGriftsToRun & " | $leaveGameOnNormalRift: " & $leaveGameOnNormalRift & " | $riftForPools: " & $riftForPools)
 	EndIf
 EndFunc
-
 
 ;===============================================================================
 ; Description:      poolOrNah - Checks for pools by looking for the yellow
@@ -215,7 +211,28 @@ Func fixState()
 	$justFailedGearSwap = True
 EndFunc
 
-; Controler function, decides if we should switch specs
+;===============================================================================
+; Description:      clickReturnToGame - Clicks return to game or clicks on exp
+;                   bar. Ideally we know all the possible states of leaving game
+;                   detect them and handle them. For now we force a state we can
+;                   handle. TODO: handle the others with logic.
+; Parameter(s):  	None
+; Return Value(s):  None
+;===============================================================================
+Func clickReturnToGame()
+	MouseClick("left", 408 + $x, 573 + $y, 1, 1)
+	sleep(100)
+	MouseClick("left", 408 + $x, 573 + $y, 1, 1)
+	sleep(100)
+	MouseClick("left", 408 + $x, 573 + $y, 1, 1)
+EndFunc
+
+;===============================================================================
+; Description:      armoryControler - Main controller for armory. Decides if we
+;                   should switch specs or not. Triggered by RBAssist.
+; Parameter(s):  	None
+; Return Value(s):  None
+;===============================================================================
 Func armoryControler()
 	; Fix an edge case were we are trying to gear swap in a bad state
 	If $justFailedGearSwap Then
@@ -228,47 +245,32 @@ Func armoryControler()
 
 	; Something happened and a previous thread failed poorly, lets get back to a good state
 	ElseIf $ignoreCounter > 10 Then
-		_FileWriteLog($autoArmoryLogFile, "[armoryControler() - called during gear change]  Fixing state...")
+		aaLog("armoryControler", "called during gear change, Ignore counter breached: " & $ignoreCounter & " Fixing state...")
 		fixState()
 		Return
 	EndIf
-	_FileWriteLog($autoArmoryLogFile, "[armoryControler() - called]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun)
+	aaLog("armoryControler", "Called", 1, 0)
 
 
     ; Should we switch fift types?
     If (($riftType = 1 And $riftCount >= $numRiftsToRun  And $changingGearFlag = 0 And $pools) Or ($riftType = 2 And $pools = False And $changingGearFlag = 0)) Then
 		If $changingGearFlag = 1 Then
-			_FileWriteLog($autoArmoryLogFile, "[armoryControler() - called during gear change (Inside of if)]  Ignoring...")
+			aaLog("armoryControler", "called during gear change (Inside of if) Ignoring...")
 			Return
 		EndIf
 
-		; Flip the Flag
+		; Flip the Flag so we don't try to change gear during a gear change
 		$changingGearFlag = 1
+		clickReturnToGame()
 
-		; Click Return to game just in case the run failed
-		_FileWriteLog($autoArmoryLogFile, "[armoryControler() - clicking return to game)]  1")
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-		sleep(100)
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-		sleep(100)
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-
-		_FileWriteLog($autoArmoryLogFile, "[armoryControler() - switching rift/armory] Pools: " & $pools & " riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun)
+		aaLog("armoryControler", "Switching rift/armory", 1,1)
 
 		; Take a selfie
 		screenShotDiablo()
 
         ; Stop Bot and wait 5 sec
         Send("{F7}")
-
-		; Click Return to game just in case the run failed
-		_FileWriteLog($autoArmoryLogFile, "[armoryControler() - clicking return to game)]  2")
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-		sleep(100)
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-		sleep(100)
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-
+        clickReturnToGame()
         sleep(4000)
 
 		; 1 -> 2
@@ -279,93 +281,98 @@ Func armoryControler()
 			$armNumber = 1
 		EndIf
 
-		; Click Return to game just in case the run failed
-		_FileWriteLog($autoArmoryLogFile, "[armoryControler() - clicking return to game)]  3")
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-		sleep(100)
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-		sleep(100)
-        MouseClick("left", 408 + $x, 573 + $y, 1, 1)
-
+		clickReturnToGame()
 		selectArmory($armNumber)
 
-
-		; hopefully this works
+		; Check for pools
 		poolOrNah()
-
 
 		; If we get an error in selectArmory further down lets just forget we were called
 		; Reset all the stuff to the state we were in and stop/start the monitor after 60
 		If @error Then
-			_FileWriteLog($autoArmoryLogFile, "[armoryControler() - selectArmory() had an ERROR] Waiting for 60 seconds before trying to stop/start Monitor ")
+			aaLog("armoryControler", "selectArmory() had an ERROR. Waiting for 60 seconds before trying to stop/start monitor.")
 
-			; Wait for 60 sec then call
+			; Wait for 60 sec then start
 			sleep(60000)
-
 			stopStartMonitor()
-
 			fixState()
-
 			Return
 		EndIf
 
 		; Happy case we changed gear correctly
 		If $armNumber = $riftType Then
-			_FileWriteLog($autoArmoryLogFile, "[armoryControler() - Select Armory worked, continuing to changeBotRiftType()]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & " armNumber: " & $armNumber)
 
 			; Reset riftCount
 			$riftCount = 0
 
+			aaLog("armoryControler", "Select Armory worked, continuing to changeBotRiftType()",1,0)
+
 			; Change bot to run GRift and Start
 			changeBotRiftType($riftType)
-
 			stopStartMonitor()
 
-			_FileWriteLog($autoArmoryLogFile, "[armoryControler() - Reseting changingGear flag]")
+			aaLog("armoryControler", "Reseting changingGear flag.")
 			$changingGearFlag = 0
 
 		; Oh no we messed up, lets restart, try again next rift
 		Else
-			_FileWriteLog($autoArmoryLogFile, "[armoryControler() - Select Armory failed, start/stoping monitor]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & " armNumber: " & $armNumber)
+			aaLog("armoryControler", "Select Armory failed, start/stoping monitor",1,0)
 			stopStartMonitor()
-
 			fixState()
-
 		EndIf
     EndIf
 EndFunc
 
+;===============================================================================
+; Description:      screenShotDiablo - This takes a screenshot right before
+;                   stopping the bot when swapping gear. This ideally allows you
+;                   to have an idea how each cycle is doing.
+; Parameter(s):  	None
+; Return Value(s):  None
+;===============================================================================
 Func screenShotDiablo()
-	_ScreenCapture_Capture("armoryScreenshots\" & @MON & "-" & @MDAY  & "-" & @YEAR & "_" & @HOUR & "-" & @MIN & "-" & @SEC & ".jpg", $x, $y, $w + $x, $h + $y,False)
+	_ScreenCapture_Capture($screenshotDirectory & @MON & "-" & @MDAY  & "-" & @YEAR & "_" & @HOUR & "-" & @MIN & "-" & @SEC & ".jpg", $x, $y, $w + $x, $h + $y, False)
+	aaLog("screenShotDiablo", "Screenshot saved to: " & $screenshotDirectory & @MON & "-" & @MDAY  & "-" & @YEAR & "_" & @HOUR & "-" & @MIN & "-" & @SEC & ".jpg")
 EndFunc
 
+;===============================================================================
+; Description:      stopStartMonitor - Stops and starts RBAssist. This does lots
+;                   of things for us. Starts rosbot, launches d3 if needed.
+; Parameter(s):  	None
+; Return Value(s):  None
+;===============================================================================
 Func stopStartMonitor()
-
 	sleep(1000)
 
 	; Wait 10 sec to activate the window
-	_FileWriteLog($autoArmoryLogFile, "[stopStartMonitor() - Activating the monitor window]")
+	aaLog("stopStartMonitor", "Activating the monitor window")
 	WinActivate("RBAssist v1.3.6 by Sunblood")
 
-	_FileWriteLog($autoArmoryLogFile, "[stopStartMonitor() - Looking for Monitor window]")
+	aaLog("stopStartMonitor", "Looking for Monitor window")
 	Local $hWnd = WinWaitActive("[CLASS:AutoIt v3 GUI]", "", 10)
 
 	; If it succeeded then click stop/start, if we fail we will try again after another rift
 	if $hWnd Then
-		_FileWriteLog($autoArmoryLogFile, "[stopStartMonitor() - Stopping Monitor]")
+		aaLog("stopStartMonitor", "Stopping Monitor")
 		ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:2]")
 		sleep(1000)
 
-		_FileWriteLog($autoArmoryLogFile, "[stopStartMonitor() - Starting Monitor]")
+		aaLog("stopStartMonitor", "Starting Monitor")
 		ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:1]")
 		sleep(1000)
 	Else
-		_FileWriteLog($autoArmoryLogFile, "[stopStartMonitor() - Failed to find Monitor Window] Returning...")
+		aaLog("stopStartMonitor", "Failed to find Monitor Window] Returning...")
 	EndIf
 EndFunc
 
+;===============================================================================
+; Description:      changeBotRiftType - Flips DoGreaterRift in RoS Bot between
+;                   true and false.
+; Parameter(s):  	None
+; Return Value(s):  None
+;===============================================================================
 Func changeBotRiftType($riftType)
-	_FileWriteLog($autoArmoryLogFile, "[changeBotRiftType() - Changing to new rift type in bot]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & " armNumber: " & $armNumber)
+	aaLog("changeBotRiftType", "Changing to new rift type in bot",1,0)
 
     ; Click Configure
 	FindBotTitle()
@@ -374,21 +381,26 @@ Func changeBotRiftType($riftType)
 	ControlClick($hWnd, "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:2]")
 	sleep(200)
 
+	; When true we will swap back and forth between 0 and 100 probability
+	; 0 for Rifts and 100 for Grifts. This saves us from waiting 30 seconds
+	; after rifts and doesn't waste time leaving game on grifts.
+	If $leaveGameOnNormalRift Then
 
-	; Change stay in game probability
-	Send("{UP}")
-	sleep(100)
-	Send("{UP}")
-	sleep(100)
+		; Select stay in game probability
+		Send("{UP}")
+		sleep(200)
+		Send("{UP}")
+		sleep(200)
 
-	If $riftType = 1 Then
-		_FileWriteLog($autoArmoryLogFile, "[changeBotRiftType() - Changing stay in game to 100]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & " armNumber: " & $armNumber)
-		ControlSetText("Configure", "", "[CLASS:WindowsForms10.EDIT.app.0.9585cb_r6_ad1; INSTANCE:1]", "0")
-	Else
-		_FileWriteLog($autoArmoryLogFile, "[changeBotRiftType() - Changing stay in game to 100]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & " armNumber: " & $armNumber)
-		ControlSetText("Configure", "", "[CLASS:WindowsForms10.EDIT.app.0.9585cb_r6_ad1; INSTANCE:1]", "100")
+		; Change stay in game probability
+		If $riftType = 1 Then
+			aaLog("changeBotRiftType", "We're running rifts. Changing stay in game probability to 0.")
+			ControlSetText("Configure", "", "[CLASS:WindowsForms10.EDIT.app.0.9585cb_r6_ad1; INSTANCE:1]", "0")
+		Else
+			aaLog("changeBotRiftType", "We're running Greater Rifts. Changing stay in game probability to 100.")
+			ControlSetText("Configure", "", "[CLASS:WindowsForms10.EDIT.app.0.9585cb_r6_ad1; INSTANCE:1]", "100")
+		EndIf
 	EndIf
-
 
 	; Select DoGreaterRift
 	WinActivate("[CLASS:WindowsForms10.SysListView32.app.0.9585cb_r6_ad1; INSTANCE:1]")
@@ -400,51 +412,49 @@ Func changeBotRiftType($riftType)
 
 	; Change rift type
 	If $riftType = 1 Then
-
 		; DoGreaterRift: False
 		ControlClick("Configure", "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:2]")
+		aaLog("changeBotRiftType", "Setting DoGreaterRift: False")
 	ElseIf $riftType = 2 Then
-
 		; DoGreaterRift: True
 		ControlClick("Configure", "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:1]")
+		aaLog("changeBotRiftType", "Setting DoGreaterRift: True")
 	EndIf
 
-	; Sleep
 	sleep(100)
 
 	; Click Save
 	ControlClick("Configure", "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:3]")
+	aaLog("changeBotRiftType", "Saving rift settings in RoS Bot")
 	sleep(300)
 EndFunc
 
-; Switch from Armory 1 or 2
+;===============================================================================
+; Description:      selectArmory - Flips DoGreaterRift in RoS Bot between
+;                   true and false.
+; Parameter(s):  	$armoryNumber - Armory number to switch to. 1 for Rifts, 2
+;                   for grifts. Changes the rift type if we swapped correctly.
+; Return Value(s):  None
+;===============================================================================
 Func selectArmory($armoryNumber)
-
-
     If ($armoryNumber = 1 Or $armoryNumber = 2) Then
+		aaLog("selectArmory", "Starting armory swap sequence")
 		sleep(1000)
 
 		; Activate window
 		WinActivate("[CLASS:D3 Main Window Class]")
 		sleep(2000)
 
-		Local $bPos = WinGetPos("Diablo III")
-
-		If @error Then
-			_FileWriteLog($autoArmoryLogFile, "[selectArmory() - ERROR] Window Position Failed, Diablo Window not Present")
-			Return SetError(1,0,0)
-		EndIf
-
-		Global $x = $bPos[0]
-		Global $y = $bPos[1]
-		Global $w = $bPos[2]
-		Global $h = $bPos[3]
+		; Update the coordinates we will be using to swap gear
+		setDiabloWindowLocation()
 
         ; Map
         Send("{m}")
         sleep(1500)
 
         ; Old Ruins
+		aaLog("selectArmory", "Telporting to Old Ruins")
+		MouseMove(367 + $x, 218 + $y)
         MouseClick("left", 367 + $x, 218 + $y, 1, 1)
         sleep(4500)
 
@@ -454,6 +464,8 @@ Func selectArmory($armoryNumber)
         sleep(3500)
 
         ; New Tristam
+		aaLog("selectArmory", "Telporting back to New Tristam")
+		MouseMove(439 + $x, 300 + $y)
         MouseClick("left", 439 + $x, 300 + $y, 1, 1)
         sleep(4500)
 
@@ -465,16 +477,21 @@ Func selectArmory($armoryNumber)
         ; Click on the Armory 1 or 2
         If $armoryNumber = 1 Then
             ; Armory 1
+			aaLog("selectArmory", "Selecting Armory 1")
             MouseClick("left", 293 + $x, 156 + $y, 1, 1)
             sleep(1000)
         ElseIf $armoryNumber = 2 Then
             ; Armory 2
+			aaLog("selectArmory", "Selecting Armory 2")
             MouseClick("left", 293 + $x, 227 + $y, 1, 1)
             sleep(1000)
 		EndIf
 
+		; Equip the gear in a loop until we detect it changed
+		; Fixes an edge case were we can't change because of a
+		; Skill on cooldown. Discovered by BinSu. Seems to be
+		; CDR / script related.
 		For $1 = 1 to 20
-			; Equip for BinSu
 			MouseClick("left", 220 + $x, 502 + $y, 1, 2)
 			sleep(1000)
 
@@ -483,6 +500,7 @@ Func selectArmory($armoryNumber)
 
 			; We changed correctly LETS GO!!!
 			If $armoryNumber = $gearnum Then
+				aaLog("selectArmory", "Rift type set to: " & $armoryNumber)
 				$riftType = $armoryNumber
 				Return
 			EndIf
@@ -490,27 +508,22 @@ Func selectArmory($armoryNumber)
     EndIf
 EndFunc
 
-; Return what gear, 1 for ms, 2 for imp, 0 for we dont know.
+;===============================================================================
+; Description:      gearOneOrTwo - Used to detect what gear/skills we have on
+;                   at the armory. Currently it detects the quiver and right
+;                   mouse button skills.
+; Parameter(s):  	None
+; Return Value(s):  1 - if we detected armory 1 gear
+;                   2 - if we detected armory 2 gear
+;                   0 - if there was no winner.
+;===============================================================================
 Func gearOneOrTwo()
-
 	Local $g1count = 0, $g2count = 0, $g1count2 = 0, $g2count2 = 0
 	Local $xx = 0, $yy = 0
 
-	_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - checking gear]")
+	aaLog("selectArmory", "Checking gear and skills")
 
-	; Activate window
-	WinActivate("[CLASS:D3 Main Window Class]")
-		If @error Then
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - ERROR] WinActivate Failed, Diablo Window not Present")
-		Return SetError(1,0,0)
-	EndIf
-
-	Local $bPos = WinGetPos("Diablo III")
-
-	If @error Then
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - ERROR] WinGetPos Failed, Diablo Window not Present")
-		Return SetError(1,0,0)
-	EndIf
+	setDiabloWindowLocation()
 
 	; Check quiver
 	For $i = 1 To 5
@@ -524,37 +537,41 @@ Func gearOneOrTwo()
 		$g2count2 += _ImageSearchArea("impale.bmp", 0, 404 + $x, 580 + $y, 440 + $x, 620 + $y, $xx, $yy, 90)
 	Next
 
-	_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - gear check done]  $g1count: " & $g1count & "  $g2count: " & $g2count)
-
+	; If the two checks agree then return if we are in A1 or A2 gear
 	If ($g1count > $g2count And $g1count2 > $g2count2) Then
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - g1 > g2]  $g1count: " & $g1count & " is >  $g2count: " & $g2count & "  Returning 1")
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - g1 > g2]  $g1count2: " & $g1count2 & " is >  $g2count2: " & $g2count2 & "  Returning 1")
+		aaLog("selectArmory", "Quiver check: A1 > A2]  Armory 1: " & $g1count & " is >  Armory 2: " & $g2count & "  Returning 1")
+		aaLog("selectArmory", "RMB Skill check: A1 > A2]  Armory 1: " & $g1count2 & " is >  Armory 2: " & $g2count2 & "  Returning 1")
 		Return 1
 	ElseIf ($g1count < $g2count And $g1count2 < $g2count2) Then
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - g2 > g1]  $g2count: " & $g2count & " is >  $g1count: " & $g1count & "  Returning 2")
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - g2 > g1]  $g2count2: " & $g2count2 & " is >  $g1count2: " & $g1count2 & "  Returning 2")
-
+		aaLog("selectArmory", "Quiver check: A1 < A2]  Armory 1: " & $g1count & " is <  Armory 2: " & $g2count & "  Returning 2")
+		aaLog("selectArmory", "RMB Skill check: A1 < A2]  Armory 1: " & $g1count2 & " is <  Armory 2: " & $g2count2 & "  Returning 2")
 		Return 2
 	Else
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - No winner]  $g1count: " & $g1count & " $g2count: " & $g2count & "  Returning 0")
-		_FileWriteLog($autoArmoryLogFile, "[gearOneOrTwo() - No winner]  $g1count2: " & $g1count2 & " $g2count2: " & $g2count2 & "  Returning 0")
+		aaLog("selectArmory", "Quiver check: no winner]  Armory 1: " & $g1count & " Armory 2: " & $g2count & "  Returning 0")
+		aaLog("selectArmory", "RMB Skill check: no winner]  Armory 1: " & $g1count2 & " Armory 2: " & $g2count2 & "  Returning 0")
 		Return 0
 	EndIf
 EndFunc
 
 
-;Since Rosbot title is random, we need a way to find a window that matches some of its features to find the title properly
+;===============================================================================
+; Description:      FindBotTitle - Since RoS Bot window is random we need to
+;                   find out the name to interact with it.
+; Parameter(s):  	None
+; Return Value(s):  Sets $rosbotwindowtitle
+;===============================================================================
 Func FindBotTitle()
 	$list = WinList() ;get a list of every window (this actually includes many hidden system and OS things but that's ok)
 	For $i = 1 To $list[0][0]
 		If ControlGetHandle($list[$i][0], "", "[TEXT:Start botting !]") <> 0 Then ;if one of the windows has a button on it that says "Start Botting !" (just like that) it's *probably* Rosbot.
 			$rosbotwindowtitle = $list[$i][0] ;set the window title that we found
+			aaLog("FindBotTitle", "RoS Bot window title found, setting $rosbotwindowtitle to: " & $rosbotwindowtitle)
 			ExitLoop ;don't bother checking the rest of the (hundreds of) windows we found
 		EndIf
 	Next
 EndFunc
 
-;Just some shorthand functions for reading ini settings, thanks to Sunblood
+;Just some shorthand functions for reading ini settings, thanks Sunblood
 Func readSetting($section, $key, $default = 0)
 	Return IniRead($settingsIni, $section, $key, $default)
 EndFunc   ;==>ReadSetting
