@@ -21,6 +21,7 @@ global $changingGearFlag = 0
 global $ignoreCounter = 0
 global $pools = False
 global $checkingPools = False
+global $justFailedGearSwap = False
 
 
 ; Activate window
@@ -46,9 +47,21 @@ HotKeySet("^.", "incRiftCount")
 ; Hotkey decRiftCount
 HotKeySet("^,", "decRiftCount")
 
+Func
 
 ; Pool or nah
 Func poolOrNah()
+	Local $bPos = WinGetPos("Diablo III")
+
+	If @error Then
+		_FileWriteLog($hFile, "[selectArmory() - ERROR] Window Position Failed, Diablo Window not Present")
+		Return SetError(1,0,0)
+	EndIf
+
+	global $x = $bPos[0]
+	global $y = $bPos[1]
+	global $w = $bPos[2]
+	global $h = $bPos[3]
 
 	Local $poolCount = 0
 	Local $xx = 0, $yy = 0
@@ -97,8 +110,12 @@ Func incRiftCount()
 	$pools = poolOrNah()
 	_FileWriteLog($hFile, "[incRiftCount() call]  setting pools flag to: " & $pools & " type: " & $riftType & "  count: " & $riftCount & "  $riftsToRun: " & $numRiftsToRun)
 
-
-
+	; fixes the case when pools return false after we just stopped running rifts and are wanting to run grifts
+	; we should instead run another rift to get back into a good state.
+	if $justFailedGearSwap Then
+		$justFailedGearSwap = False
+		_FileWriteLog($hFile, "[incRiftCount() call]  setting justFailedGearSwap flag to: false")
+	EndIf
 EndFunc
 
 ; Decrement Rift count
@@ -110,15 +127,23 @@ EndFunc
 Func fixState()
 	; Avoid weird loops because we are in the wrong town
 	; Next make the town not matter
-	$riftCount = $riftCount > 0 ? $riftCount - 1 : 0
 	_FileWriteLog($hFile, "[fixState() - Setting $riftCount] $riftCount set to: " & $riftCount)
+	$riftCount = $riftCount > 0 ? $riftCount - 1 : 0
 
-	_FileWriteLog($hFile, "[fixState() - Reseting Flag]")
+	_FileWriteLog($hFile, "[fixState() - Reseting changingGear flag]")
 	$changingGearFlag = 0
+
+	_FileWriteLog($hFile, "[fixState() - Reseting justFailedGearSwap flag]")
+	$justFailedGearSwap = true
 EndFunc
 
 ; Controler function, decides if we should switch specs
 Func armoryControler()
+	; Fix an edge case were we are trying to gear swap in a bad state
+	If $justFailedGearSwap Then
+		_FileWriteLog($hFile, "[armoryControler() - called after failing]  Ignoring. Will run another rift before retrying")
+	EndIf
+
 	If ($changingGearFlag = 1 And $ignoreCounter <= 10) Then
 		_FileWriteLog($hFile, "[armoryControler() - called during gear change]  Ignoring...")
 		Return
@@ -218,13 +243,12 @@ Func armoryControler()
 
 			stopStartMonitor()
 
-			_FileWriteLog($hFile, "[armoryControler() - Reseting Flag]")
+			_FileWriteLog($hFile, "[armoryControler() - Reseting changingGear flag]")
 			$changingGearFlag = 0
 
 		; Oh no we messed up, lets restart, try again next rift
 		Else
 			_FileWriteLog($hFile, "[armoryControler() - Select Armory failed, start/stoping monitor]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & " armNumber: " & $armNumber)
-
 			stopStartMonitor()
 
 			fixState()

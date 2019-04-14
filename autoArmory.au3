@@ -127,7 +127,7 @@ Func armoryControler()
 			; Wait for 60 sec then call
 			sleep(60000)
 
-			stopStartMonitor()
+			startBot()
 
 			fixState()
 
@@ -144,7 +144,7 @@ Func armoryControler()
 			; Change bot to run GRift and Start
 			changeBotRiftType($riftType)
 
-			stopStartMonitor()
+			startBot()
 
 			_FileWriteLog($hFile, "[armoryControler() - Reseting Flag]")
 			$changingGearFlag = 0
@@ -153,7 +153,7 @@ Func armoryControler()
 		Else
 			_FileWriteLog($hFile, "[armoryControler() - Select Armory failed, start/stoping monitor]  riftType: " & $riftType & "  riftCount: " & $riftCount & "  $numRiftsToRun: " & $numRiftsToRun & "  numGriftsToRun: " & $numGriftsToRun & " armNumber: " & $armNumber)
 
-			stopStartMonitor()
+			startBot()
 
 			fixState()
 
@@ -165,29 +165,21 @@ Func screenShotDiablo()
 	_ScreenCapture_Capture("armoryScreenshots\" & @MON & "-" & @MDAY  & "-" & @YEAR & "_" & @HOUR & "-" & @MIN & "-" & @SEC & ".jpg", $x, $y, $w + $x, $h + $y,False)
 EndFunc
 
-Func stopStartMonitor()
-
+; Thanks to Sunblood and Bantou
+Func startBot()
 	sleep(1000)
 
-	; Wait 10 sec to activate the window
-	_FileWriteLog($hFile, "[stopStartMonitor() - Activating the monitor window]")
-	WinActivate("RBAssist v1.3.6 by Sunblood")
+    ; Activate bot window
+	_FileWriteLog($hFile, "[startBot() - Getting Bot Title]")
+	FindBotTitle()
+	_FileWriteLog($hFile, "[startBot() - Activating Window] - rosbotwindowtitle: " & $rosbotwindowtitle)
+	WinActivate($rosbotwindowtitle)
 
-	_FileWriteLog($hFile, "[stopStartMonitor() - Looking for Monitor window]")
-	Local $hWnd = WinWaitActive("[CLASS:AutoIt v3 GUI]", "", 10)
+	; Start botting!
+	_FileWriteLog($hFile, "[startBot() - Starting Bot] - Sending space to [Start botting!]")
+	Local $rbButtonStart = ControlGetHandle($rosbotwindowtitle, "", "[TEXT:Start botting !]")
+	ControlSend($rosbotwindowtitle, "", $rbButtonStart, "{SPACE}") ;sends a SPACE bar keypress to the button, effectively starting the bot.
 
-	; If it succeeded then click stop/start, if we fail we will try again after another rift
-	if $hWnd Then
-		_FileWriteLog($hFile, "[stopStartMonitor() - Stopping Monitor]")
-		ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:2]")
-		sleep(1000)
-
-		_FileWriteLog($hFile, "[stopStartMonitor() - Starting Monitor]")
-		ControlClick($hWnd, "", "[CLASS:Button; INSTANCE:1]")
-		sleep(1000)
-	Else
-		_FileWriteLog($hFile, "[stopStartMonitor() - Failed to find Monitor Window] Returning...")
-	EndIf
 EndFunc
 
 Func changeBotRiftType($riftType)
@@ -350,7 +342,7 @@ Func gearOneOrTwo()
 	EndIf
 EndFunc
 
-
+; Thanks to Sunblood
 ;Since Rosbot title is random, we need a way to find a window that matches some of its features to find the title properly
 Func FindBotTitle()
 	$list = WinList() ;get a list of every window (this actually includes many hidden system and OS things but that's ok)

@@ -1,6 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Outfile_x64=autoArmoryTest.exe
+#AutoIt3Wrapper_Outfile_x64=autoArmoryTest-2-4.exe
 #AutoIt3Wrapper_UseX64=y
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #include <ImageSearch.au3>
@@ -12,8 +12,8 @@
 global $hFile = FileOpen(@ScriptDir & "\ArmoryLog.txt", 1)
 global $rosbotwindowtitle = ""
 global $riftCount = 0
-global $numRiftsToRun = 1
-global $numGriftsToRun = 2
+global $numRiftsToRun = 2
+global $numGriftsToRun = 4
 global $riftType = 1
 global $leaveGame = False
 global $armNumber = 2
