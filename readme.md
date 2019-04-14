@@ -8,14 +8,18 @@
 * This script is use at your own risk but if you follow the setup you should be fine.
 
 ## Version updates
-* v0.01 - 04/01/2019 - Initial build.
-* v0.02 - 04/02/2019 - Changed gear change verification to offhand instead of skills to be compatible with TurboHUD. Removed 5rift/6grift rift type and added 2rift/4grift. 2/4 is the same ratio of 1/2 with less gear changes but I left 1/2 for faster testing.
-* v0.03 - 04/03/2019 - Added support for the edge case where activating the RBAssist window fails. Now we wait 10 sec for it to become active and continue on to try again after the next rift.
-* v0.04 - 04/03/2019 - Added additional gear verification to be safe. We now check the quiver and the main attack (right mouse button.) Also added hotkeys to increment `Ctrl + >` or decrement `Ctrl + <` rift count. This allows you to add to the rift count to switch gear next time you are in town or decrement rift count if you want to run a couple more grifts and use up your pools.
-* v0.05 - 04/04/2019 - Added autoArmoryTest.ext and it's source. This allows the user to test out swapping gear without running rifts. It also will swap the rift type in rosbot so run it with rosbot open (but not running) and d3 open. Just press Ctrl+g to change gear. Note there's a 6 sec delay once pressing till it tries to swap gear. 
-* v0.06 - 04/04/2019 - Added mouse movement when clicking on the telporter. This fixes an issue where clicking the teleporter is too fast and causes the caracter in the old ruins to move instead of opening the map.
-* v0.07 - 04/04/2019 - Added RiftForPool version!!! This version will rift until the pool marker is on the far right, then run 'n' rifts more (2 by default). It's set to leave game after every rift and stay in game after every grift. Assuming decent gear, no pickit, this should max the exp per hour. For those running a normal pickit I will add a version that doesn't change the stay in game probability next.
+* v1.00 - 04/14/2019 - Removed all versions of the script with different features and added them all into one. Now you can run "Rift for Pools" do do a fixed ratio of rift to grifts (1:2, 2:4, 4:9 etc), set if you want to leave game on rifts to save time etc, test features like like testing the gear swap with Ctrl + g are also in this version. Also lots of comments/documentation, cleaned the code, added better logging, more compatibility for slower pc's and vm's. Misc bug fixes. Get this version and setup your ini file!
 * v0.08 - 04/04/2019 - Added support for vm's having trouble with clicking armory and CD's not allowing the character to swap gear.
+* v0.07 - 04/04/2019 - Added RiftForPool version!!! This version will rift until the pool marker is on the far right, then run 'n' rifts more (2 by default). It's set to leave game after every rift and stay in game after every grift. Assuming decent gear, no pickit, this 
+should max the exp per hour. For those running a normal pickit I will add a version that doesn't change the stay in game probability next.
+* v0.06 - 04/04/2019 - Added mouse movement when clicking on the telporter. This fixes an issue where clicking the teleporter is too fast and causes the caracter in the old ruins to move instead of opening the map.
+* v0.05 - 04/04/2019 - Added autoArmoryTest.ext and it's source. This allows the user to test out swapping gear without running rifts. It also will swap the rift type in rosbot so run it with rosbot open (but not running) and d3 open. Just press Ctrl+g to change gear. Note there's a 6 sec delay once pressing till it tries to swap gear. 
+* v0.04 - 04/03/2019 - Added additional gear verification to be safe. We now check the quiver and the main attack (right mouse button.) Also added hotkeys to increment `Ctrl + >` or decrement `Ctrl + <` rift count. This allows you to add to the rift count to switch gear next time you are in town or decrement rift count if you want to run a couple more grifts and use up your pools.
+* v0.03 - 04/03/2019 - Added support for the edge case where activating the RBAssist window fails. Now we wait 10 sec for it to become active and continue on to try again after the next rift.
+* v0.02 - 04/02/2019 - Changed gear change verification to offhand instead of skills to be compatible with TurboHUD. Removed 5rift/6grift rift type and added 2rift/4grift. 2/4 is the same ratio of 1/2 with less gear changes but I left 1/2 for faster testing.
+* v0.01 - 04/01/2019 - Initial build.
+
+
 
 ## How it Works
 1. Run the number of rifts specified.
@@ -71,7 +75,7 @@
 ## Setup / Install
 1. Click the "Clone or Download" button then "Download Zip"
 2. Extract the zip to a directory of your choice. 
-3. Run Diablo III in windowed mode and make the window the minimum size (it will not work any larger than this without modification). To be safe run windows in 1920x1080. Will work on supporting other resolutions and window sizes.
+3. Run Diablo III in windowed mode and make the window the minimum size (it will not work any larger than this without modification). Make sure Windows Display Scaling is off (100%).
 4. Make sure your Rift gear is in Armory 1 (Multishot using Dead Mans Legacy quiver, we will detect this later). Make sure no items are missing. Also Multishot should be on the right mouse button as shown.
 
  ![](readmeImages/Armory1.PNG)
@@ -109,6 +113,8 @@
 
  ![](readmeImages/RosBotConfig.PNG)
 
+12. Edit the ini file to the way you want it and save. 0 is false, 1 is true.
+
 ## Troubleshooting
 1. Subscript Error when loading script: The Diablo window is not open. Open Diablo before opeing the script
 
@@ -118,3 +124,5 @@
    1. You didn't start things correctly, make sure you are wearing rift gear (multishot armory 1), make sure rosbot is set to not run grifts, exit any running autoArmory scripts and start a fresh one. This insures we are in the correct state when starting.
 
    2.  It might have changed gear ok but failed to change the rift type. Watch it closely to see where it failed.
+
+4. Not detecting gear change or not changing rift type in bot. Make sure windows display scaling is off. It's not supported at this time.
