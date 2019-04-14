@@ -1,6 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Outfile_x64=autoArmoryRfp.exe
+#AutoIt3Wrapper_Outfile_x64=autoArmoryV1.exe
 #AutoIt3Wrapper_UseX64=y
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #include <ImageSearch.au3>
@@ -81,6 +81,7 @@ Func setDiabloWindowLocation()
 	; Activate window
 	WinActivate("[CLASS:D3 Main Window Class]")
 
+	; Get position
 	Local $bPos = WinGetPos("Diablo III")
 
 	If @error Then
@@ -88,12 +89,12 @@ Func setDiabloWindowLocation()
 		Return SetError(1,0,0)
 	EndIf
 
+	; Set position
 	aaLog("setDiabloWindowLocation", "Window detected - Setting - x: " & $x & " y: " & $y & " w: " & $w & " h: " & $h)
-
-	Global $x = $bPos[0]
-	Global $y = $bPos[1]
-	Global $w = $bPos[2]
-	Global $h = $bPos[3]
+	$x = $bPos[0]
+	$y = $bPos[1]
+	$w = $bPos[2]
+	$h = $bPos[3]
 EndFunc
 
 ;===============================================================================
@@ -106,13 +107,13 @@ EndFunc
 ;							    0 to exclude settings
 ; Return Value(s):  None
 ;===============================================================================
-Func aaLog($functionName, $message, $state, $settings)
+Func aaLog($functionName, $message, $state = 0, $settings = 0)
 	; We always log the functionName and message
 	_FileWriteLog($autoArmoryLogFile, "[" & $functionName & "] - " & $message)
 
 	; Log State if requested
 	If $state Then
-		_FileWriteLog($autoArmoryLogFile, "   | $pools: " & $pools & " | $riftType: " & $riftType & " | $riftCount: " & $riftCount & " | $changingGearFlag: " & $changingGearFlag & " | $justFailedGearSwap: " $justFailedGearSwap & " | $rosbotwindowtitle: " $rosbotwindowtitle)
+		_FileWriteLog($autoArmoryLogFile, "   | $pools: " & $pools & " | $riftType: " & $riftType & " | $riftCount: " & $riftCount & " | $changingGearFlag: " & $changingGearFlag & " | $justFailedGearSwap: " & $justFailedGearSwap & " | $rosbotwindowtitle: " & $rosbotwindowtitle)
 	EndIf
 
 	; Log settings if requested
@@ -189,28 +190,40 @@ Func incRiftCount()
 	EndIf
 EndFunc
 
+;===============================================================================
+; Description:      fixState - Called when we we failed a gear swap. Fixes
+;                              edge cases like diablo closing while swapping.
+;                              When we fail a swap we should do another rift
+;                              until we are in a better state.
+;  Changes:         $changingGearFlag from 1 to 0
+;				    $riftCount -= 1 or 0
+;					$justFailedGearSwap from 0 to 1
+; Parameter(s):  	None
+; Return Value(s):  None
+;===============================================================================
 Func fixState()
-	; Avoid weird loops because we are in the wrong town
-	; Next make the town not matter
-	_FileWriteLog($autoArmoryLogFile, "[fixState() - Setting $riftCount] $riftCount set to: " & $riftCount)
+	; Avoid weird loops because we are in the wrong town after a crash
+	; Run another rift so that that we are in the right town at the
+	; right time.
+	aaLog("fixState", "Setting $riftCoun to: " & $riftCount)
 	$riftCount = $riftCount > 0 ? $riftCount - 1 : 0
 
-	_FileWriteLog($autoArmoryLogFile, "[fixState() - Reseting changingGear flag]")
+	aaLog("fixState", "Setting $changingGear flag to: 0")
 	$changingGearFlag = 0
 
-	_FileWriteLog($autoArmoryLogFile, "[fixState() - Reseting justFailedGearSwap flag]")
-	$justFailedGearSwap = true
+	aaLog("fixState", "Setting $justFailedGearSwap flag to: true")
+	$justFailedGearSwap = True
 EndFunc
 
 ; Controler function, decides if we should switch specs
 Func armoryControler()
 	; Fix an edge case were we are trying to gear swap in a bad state
 	If $justFailedGearSwap Then
-		_FileWriteLog($autoArmoryLogFile, "[armoryControler() - called after failing]  Ignoring. Will run another rift before retrying")
+		aaLog("armoryControler", "Called after failing. Lets run another rift before re-trying.")
 	EndIf
 
 	If ($changingGearFlag = 1 And $ignoreCounter <= 10) Then
-		_FileWriteLog($autoArmoryLogFile, "[armoryControler() - called during gear change]  Ignoring...")
+		;aaLog("armoryControler", "called during gear change, ignoring...")
 		Return
 
 	; Something happened and a previous thread failed poorly, lets get back to a good state
