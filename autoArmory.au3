@@ -425,8 +425,8 @@ Func changeBotRiftType($riftType)
     ; Click Configure
 	FindBotTitle()
 	WinActivate($rosbotwindowtitle)
-	Local $hWnd = WinWaitActive("[CLASS:WindowsForms10.Window.8.app.0.9585cb_r6_ad1]")
-	ControlClick($hWnd, "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:2]")
+	Local $hWnd = WinWaitActive($rosbotwindowtitle)
+	ControlClick($hWnd, "", "[REGEXPCLASS:WindowsForms10\.BUTTON(.*)?; INSTANCE:2]")
 	sleep(200)
 
 	; When true we will swap back and forth between 0 and 100 probability
@@ -443,15 +443,16 @@ Func changeBotRiftType($riftType)
 		; Change stay in game probability
 		If $riftType = 1 Then
 			aaLog("changeBotRiftType", "We're running rifts. Changing stay in game probability to 0.")
-			ControlSetText("Configure", "", "[CLASS:WindowsForms10.EDIT.app.0.9585cb_r6_ad1; INSTANCE:1]", "0")
+			ControlSetText("Configure", "", "[REGEXPCLASS:WindowsForms10\.EDIT(.*)?; INSTANCE:1]", "0")
 		Else
 			aaLog("changeBotRiftType", "We're running Greater Rifts. Changing stay in game probability to 100.")
-			ControlSetText("Configure", "", "[CLASS:WindowsForms10.EDIT.app.0.9585cb_r6_ad1; INSTANCE:1]", "100")
+			ControlSetText("Configure", "", "[REGEXPCLASS:WindowsForms10\.EDIT(.*)?; INSTANCE:1]", "100")
 		EndIf
 	EndIf
 
 	; Select DoGreaterRift
-	WinActivate("[CLASS:WindowsForms10.SysListView32.app.0.9585cb_r6_ad1; INSTANCE:1]")
+	aaLog("changeBotRiftType", "Activating list view...")
+	WinActivate("[REGEXPCLASS:WindowsForms10\.SysListView32(.*)?; INSTANCE:1]")
 	For $i = 1 To 20 Step 1
 		Send("{UP}")
 		sleep(50)
@@ -461,18 +462,18 @@ Func changeBotRiftType($riftType)
 	; Change rift type
 	If $riftType = 1 Then
 		; DoGreaterRift: False
-		ControlClick("Configure", "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:2]")
+		ControlClick("Configure", "", "[REGEXPCLASS:WindowsForms10\.BUTTON(.*)?; INSTANCE:2]")
 		aaLog("changeBotRiftType", "Setting DoGreaterRift: False")
 	ElseIf $riftType = 2 Then
 		; DoGreaterRift: True
-		ControlClick("Configure", "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:1]")
+		ControlClick("Configure", "", "[REGEXPCLASS:WindowsForms10\.BUTTON(.*)?; INSTANCE:1]")
 		aaLog("changeBotRiftType", "Setting DoGreaterRift: True")
 	EndIf
 
 	sleep(100)
 
 	; Click Save
-	ControlClick("Configure", "", "[CLASS:WindowsForms10.BUTTON.app.0.9585cb_r6_ad1; INSTANCE:3]")
+	ControlClick("Configure", "", "[REGEXPCLASS:WindowsForms10\.BUTTON(.*)?; INSTANCE:3]")
 	aaLog("changeBotRiftType", "Saving rift settings in RoS Bot")
 	sleep(300)
 EndFunc

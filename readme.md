@@ -8,6 +8,7 @@
 * This script is use at your own risk but if you follow the setup you should be fine.
 
 ## Version updates
+* v1.01 - 04/15/2019 - Made the rift changing process in rosbot more generic so that it works across versions of rosbot. This fixes the case were some users would be able to swap gear but the script couldn't find rosbot controls which caused it to just stand in town.
 * v1.00 - 04/14/2019 - Removed all versions of the script with different features and added them all into one. Now you can run "Rift for Pools" do do a fixed ratio of rift to grifts (1:2, 2:4, 4:9 etc), set if you want to leave game on rifts to save time etc, test features like like testing the gear swap with Ctrl + g are also in this version. Also lots of comments/documentation, cleaned the code, added better logging, more compatibility for slower pc's and vm's. Misc bug fixes. Get this version and setup your ini file!
 * v0.08 - 04/04/2019 - Added support for vm's having trouble with clicking armory and CD's not allowing the character to swap gear.
 * v0.07 - 04/04/2019 - Added RiftForPool version!!! This version will rift until the pool marker is on the far right, then run 'n' rifts more (2 by default). It's set to leave game after every rift and stay in game after every grift. Assuming decent gear, no pickit, this 
